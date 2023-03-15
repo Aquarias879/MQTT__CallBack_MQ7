@@ -1,0 +1,33 @@
+swager 
+
+An endpoint for testing requestBody documentation.
+---
+description: User recognition, request Token and public keys
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      required:
+        - http://127.0.0.1:5001/sensordata/<device_id>?measurements= < measurment >
+      properties:
+        device_id:
+          type: int
+          example: 1
+        measurements:
+          example: gas_value/adc/relay_state/gas_state
+          
+
+responses:
+  200:
+    description: create successed
+    schema:
+        message:
+          type: json
+          example: 
+            _id: "63e5be5cd3ca6743136082bc"
+            datetime: "Fri, 10 Feb 2023 03:47:40 GMT"
+            device: "device1"
+            measurement: "gas_value"
+            value: "0.50"
+

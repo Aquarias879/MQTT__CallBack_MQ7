@@ -1,0 +1,30 @@
+An endpoint for testing requestBody documentation.
+---
+description: User recognition, request Token and public keys
+parameters:       
+  - name: body
+    in: body
+    required: true
+    schema:
+      required:
+        - key
+        - value
+      properties:   
+        key:
+          type: string
+          description: key
+          example: "state"
+        value:
+          description: string
+          type: string
+          example: "on"
+
+
+responses:
+  200:
+    description: successed
+    schema:
+      properties:
+        message:
+          type: string
+          example: Relay state changed to on/off for device < device_id > 

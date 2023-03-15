@@ -1,0 +1,91 @@
+version: '3.2'
+
+services:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    links:
+      - publisher
+      - consumer
+
+  consumer:
+    container_name: consumer
+    build: consumer/
+    ports:
+      - 5002:5002
+    depends_on:
+      - mqtt
+    links:
+      - mongodb1
+
+  publisher:
+    container_name: publisher
+    build: publisher/
+    ports:
+      - 5005:5005
+    depends_on:
+      - mqtt
+    links:
+      - mongodb2
+
+  ls_data:
+    container_name: ls_data
+    build: ls_data/
+    links:
+      - mongodb3
+
+  mongodb1:
+    container_name: insert-mongodb1
+    image: mongo:4.2
+    command: mongod --replSet RS --port 27041 --dbpath /data/db --config /resource/mongod.yml
+    ports:
+      - 27017:27041
+    volumes:
+      - ./mongodb/mongod.yml:/resource/mongod.yml
+      - ./mongodb/data/insert-mongodb1:/data/db
+    networks:
+      - my-mongo-cluster
+
+  mongodb2:
+    container_name: query-mongodb2
+    image: mongo:4.2
+    command: mongod --replSet RS --port 27041 --dbpath /data/db --config /resource/mongod.yml
+    ports:
+      - 27018:27041
+    volumes:
+      - ./mongodb/mongod.yml:/resource/mongod.yml
+      - ./mongodb/data/query-mongodb2:/data/db
+    networks:
+      - my-mongo-cluster
+
+  mongodb3:
+    container_name: query-mongodb3
+    image: mongo:4.2
+    command: mongod --replSet RS --port 27041 --dbpath /data/db --config /resource/mongod.yml
+    ports:
+      - 27019:27041
+    volumes:
+      - ./mongodb/mongod.yml:/resource/mongod.yml
+      - ./mongodb/data/query-mongodb3:/data/db
+    networks:
+      - my-mongo-cluster
+
+  mqtt:
+    image: eclipse-mosquitto:1.6.12
+    container_name: mqtt
+    ports:
+      - 1883:1883
+    networks:
+      - mqtt-network
+
+networks:
+  my-mongo-cluster:
+    driver: bridge
+  mqtt-network:
+    driver: bridge
+
